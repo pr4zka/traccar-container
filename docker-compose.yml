@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:15
+    container_name: traccar-db
+    restart: always
+    environment:
+      POSTGRES_DB: traccar
+      POSTGRES_USER: traccar
+      POSTGRES_PASSWORD: traccar
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+
+  traccar:
+    image: traccar/traccar:latest
+    container_name: traccar
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8082:8082"         # web UI
+      - "5001-5150:5001-5150/tcp"  # puertos GPS TCP
+      - "5001-5150:5001-5150/udp"  # puertos GPS UDP
+    volumes:
+      - ./logs:/opt/traccar/logs
+      - ./data:/opt/traccar/data
+      - ./traccar.xml:/opt/traccar/conf/traccar.xml:ro
